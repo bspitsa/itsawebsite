@@ -26,18 +26,6 @@
             --warning: #ffc107;
         }
 
-        /* Dark theme overrides */
-        body[data-theme="dark"] {
-            --background: #0f1115;
-            --secondary: #e6e6e6;
-            --white: #121317;
-            --light-gray: #1c1f26;
-            --medium-gray: #2a2f39;
-            --text-muted: #9aa4b2;
-            --shadow-light: 0 2px 10px rgba(0,0,0,0.6);
-            --shadow-medium: 0 6px 20px rgba(0,0,0,0.5);
-        }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
@@ -263,28 +251,6 @@
             font-size: 1.2rem;
         }
 
-        .drag-handle {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 1px dashed var(--medium-gray);
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: grab;
-            user-select: none;
-            background: transparent;
-        }
-
-        .announcement-item.dragging {
-            opacity: 0.6;
-            border-color: var(--primary);
-        }
-
         .add-btn {
             background: var(--success);
             color: var(--white);
@@ -297,7 +263,7 @@
         }
 
         .json-preview {
-            background: var(--white);
+            background: #f8f9fa;
             border: 1px solid var(--light-gray);
             border-radius: 8px;
             padding: 1rem;
@@ -307,7 +273,6 @@
             max-height: 400px;
             overflow-y: auto;
             margin-bottom: 1rem;
-            color: var(--secondary);
         }
 
         .status-message {
@@ -433,16 +398,7 @@
             </div>
             <div class="form-group">
                 <label class="form-label" for="password">Password</label>
-                <div style="position: relative;">
-                    <input type="password" id="password" class="form-input" required>
-                    <button type="button" id="togglePassword" class="btn btn-secondary" style="position: absolute; right: 6px; top: 6px; padding: 0.5rem 0.75rem;">Show</button>
-                </div>
-            </div>
-            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
-                <label style="display:flex; align-items:center; gap: 0.5rem;">
-                    <input type="checkbox" id="rememberMe"> Remember me
-                </label>
-                <small id="lockoutInfo" style="color: var(--danger);"></small>
+                <input type="password" id="password" class="form-input" required>
             </div>
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
@@ -452,10 +408,7 @@
     <div id="adminContainer" class="admin-container">
         <header class="admin-header">
             <h1 class="admin-title">ITSA Admin Panel</h1>
-            <div>
-                <button id="themeToggle" class="btn btn-secondary" style="margin-right: 0.5rem;">Toggle Theme</button>
-                <button onclick="logout()" class="btn btn-secondary">Logout</button>
-            </div>
+            <button onclick="logout()" class="btn btn-secondary">Logout</button>
         </header>
 
         <!-- GitHub Configuration Section -->
@@ -507,9 +460,9 @@
 
         <!-- Navigation Tabs -->
         <div class="tabs">
-            <button class="tab active" onclick="showTab('content', event)">Site Content</button>
-            <button class="tab" onclick="showTab('announcements', event)">Announcements</button>
-            <button class="tab" onclick="showTab('preview', event)">JSON Preview</button>
+            <button class="tab active" onclick="showTab('content')">Site Content</button>
+            <button class="tab" onclick="showTab('announcements')">Announcements</button>
+            <button class="tab" onclick="showTab('preview')">JSON Preview</button>
         </div>
 
         <!-- Site Content Tab -->
@@ -544,47 +497,12 @@
         <div id="preview" class="tab-content">
             <h2>JSON Preview</h2>
             <div id="jsonPreview" class="json-preview"></div>
-            <div style="display:flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
-                <button onclick="generateJSON()" class="btn btn-primary">Generate JSON</button>
-                <button onclick="copyJSON()" class="btn btn-secondary">Copy JSON</button>
-                <button onclick="downloadJSON()" class="btn btn-secondary">Download JSON</button>
-                <label class="btn btn-secondary" style="cursor:pointer;">
-                    Upload JSON
-                    <input type="file" accept="application/json" style="display:none;" onchange="uploadJSON(this)">
-                </label>
-                <button onclick="testGitHubConnection()" class="btn btn-secondary">Test GitHub</button>
-                <button onclick="commitToGitHub()" class="btn btn-success">Commit to GitHub</button>
-            </div>
+            <button onclick="generateJSON()" class="btn btn-primary" style="margin-right: 1rem;">Generate JSON</button>
+            <button onclick="commitToGitHub()" class="btn btn-success">Commit to GitHub</button>
         </div>
     </div>
 
     <script>
-        // Theme handling
-        const THEME_KEY = 'itsa_theme';
-        function applySavedTheme() {
-            try {
-                const saved = window.localStorage.getItem(THEME_KEY);
-                if (saved === 'dark') {
-                    document.body.setAttribute('data-theme', 'dark');
-                } else {
-                    document.body.removeAttribute('data-theme');
-                }
-            } catch (_) {}
-        }
-
-        function toggleTheme() {
-            const isDark = document.body.getAttribute('data-theme') === 'dark';
-            if (isDark) {
-                document.body.removeAttribute('data-theme');
-                try { window.localStorage.setItem(THEME_KEY, 'light'); } catch (_) {}
-            } else {
-                document.body.setAttribute('data-theme', 'dark');
-                try { window.localStorage.setItem(THEME_KEY, 'dark'); } catch (_) {}
-            }
-        }
-
-        applySavedTheme();
-
         // Authentication
         function login(event) {
             event.preventDefault();
@@ -608,7 +526,7 @@
         }
 
         // Tab Management
-        function showTab(tabName, evt) {
+        function showTab(tabName) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -619,9 +537,7 @@
 
             // Show selected tab
             document.getElementById(tabName).classList.add('active');
-            if (evt && evt.target) {
-                evt.target.classList.add('active');
-            }
+            event.target.classList.add('active');
 
             if (tabName === 'preview') {
                 generateJSON();
@@ -910,14 +826,6 @@
 
         // Event Listeners
         document.getElementById('loginForm').addEventListener('submit', login);
-        // Theme toggle button (after DOM is parsed)
-        document.addEventListener('DOMContentLoaded', function() {
-            applySavedTheme();
-            const btn = document.getElementById('themeToggle');
-            if (btn) {
-                btn.addEventListener('click', toggleTheme);
-            }
-        });
         
         // Auto-generate JSON when content changes
         ['siteTitle', 'headline', 'subheadline'].forEach(id => {
@@ -927,8 +835,7 @@
                 }
             });
         });
-        
-        // GitHub Integration
+         // GitHub Integration
         async function commitToGitHub() {
             const config = getGitHubConfig();
             
@@ -988,239 +895,6 @@
                 }
             } catch (error) {
                 showStatus(`Error: ${error.message}`, 'error');
-            }
-        }
-
-        // Login UX: show/hide password, remember me, simple lockout
-        (function enhanceLogin() {
-            const PASSWORD_TOGGLE_ID = 'togglePassword';
-            const REMEMBER_KEY = 'itsa_remember_me';
-            const LOCK_KEY = 'itsa_lockout_until';
-            const FAIL_KEY = 'itsa_failed_attempts';
-            const LOCK_DURATION_MS = 2 * 60 * 1000; // 2 minutes
-            const MAX_ATTEMPTS = 5;
-
-            function updateLockoutUI() {
-                const lockoutInfo = document.getElementById('lockoutInfo');
-                const until = parseInt(localStorage.getItem(LOCK_KEY) || '0', 10);
-                const now = Date.now();
-                if (until && now < until) {
-                    const seconds = Math.ceil((until - now) / 1000);
-                    lockoutInfo.textContent = `Locked. Try again in ${seconds}s`;
-                    document.getElementById('username').disabled = true;
-                    document.getElementById('password').disabled = true;
-                } else {
-                    lockoutInfo.textContent = '';
-                    document.getElementById('username').disabled = false;
-                    document.getElementById('password').disabled = false;
-                    localStorage.removeItem(LOCK_KEY);
-                    localStorage.setItem(FAIL_KEY, '0');
-                }
-            }
-
-            function onLoginSubmitWrap(e) {
-                const until = parseInt(localStorage.getItem(LOCK_KEY) || '0', 10);
-                if (until && Date.now() < until) {
-                    e.preventDefault();
-                    updateLockoutUI();
-                    return;
-                }
-                const prev = parseInt(localStorage.getItem(FAIL_KEY) || '0', 10);
-                const user = document.getElementById('username').value;
-                const pass = document.getElementById('password').value;
-                const ok = (user === 'itsa' && pass === 'itsa2025');
-                if (!ok) {
-                    const next = prev + 1;
-                    localStorage.setItem(FAIL_KEY, String(next));
-                    if (next >= MAX_ATTEMPTS) {
-                        localStorage.setItem(LOCK_KEY, String(Date.now() + LOCK_DURATION_MS));
-                    }
-                    // allow original handler to show alert
-                    setTimeout(updateLockoutUI, 0);
-                } else {
-                    localStorage.setItem(FAIL_KEY, '0');
-                    if (document.getElementById('rememberMe').checked) {
-                        localStorage.setItem(REMEMBER_KEY, user);
-                    } else {
-                        localStorage.removeItem(REMEMBER_KEY);
-                    }
-                }
-            }
-
-            document.addEventListener('DOMContentLoaded', function() {
-                // password toggle
-                const toggleBtn = document.getElementById(PASSWORD_TOGGLE_ID);
-                const pwd = document.getElementById('password');
-                if (toggleBtn && pwd) {
-                    toggleBtn.addEventListener('click', function() {
-                        const isPwd = pwd.getAttribute('type') === 'password';
-                        pwd.setAttribute('type', isPwd ? 'text' : 'password');
-                        toggleBtn.textContent = isPwd ? 'Hide' : 'Show';
-                    });
-                }
-                // remember me
-                const remembered = localStorage.getItem(REMEMBER_KEY);
-                if (remembered) {
-                    const userInput = document.getElementById('username');
-                    const rememberChk = document.getElementById('rememberMe');
-                    if (userInput && rememberChk) {
-                        userInput.value = remembered;
-                        rememberChk.checked = true;
-                    }
-                }
-                updateLockoutUI();
-                setInterval(updateLockoutUI, 1000);
-                // wrap login submission
-                const form = document.getElementById('loginForm');
-                if (form) {
-                    form.addEventListener('submit', onLoginSubmitWrap, true);
-                }
-            });
-        })();
-
-        // Drag-and-drop reordering for announcements
-        (function enableDnD() {
-            function onDragStart(e) {
-                const item = e.currentTarget;
-                item.classList.add('dragging');
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('text/plain', item.id);
-            }
-            function onDragEnd(e) {
-                e.currentTarget.classList.remove('dragging');
-            }
-            function onDragOver(e) {
-                e.preventDefault();
-                const container = document.getElementById('announcementsList');
-                const dragging = document.querySelector('.announcement-item.dragging');
-                const afterElement = getDragAfterElement(container, e.clientY);
-                if (!afterElement) {
-                    container.appendChild(dragging);
-                } else {
-                    container.insertBefore(dragging, afterElement);
-                }
-            }
-            function getDragAfterElement(container, y) {
-                const elements = [...container.querySelectorAll('.announcement-item:not(.dragging)')];
-                return elements.reduce((closest, child) => {
-                    const box = child.getBoundingClientRect();
-                    const offset = y - box.top - box.height / 2;
-                    if (offset < 0 && offset > closest.offset) {
-                        return { offset, element: child };
-                    } else {
-                        return closest;
-                    }
-                }, { offset: Number.NEGATIVE_INFINITY }).element;
-            }
-
-            const list = document.getElementById('announcementsList');
-            if (list) {
-                list.addEventListener('dragover', onDragOver);
-            }
-
-            const origAdd = window.addAnnouncement;
-            window.addAnnouncement = function(title, text, date, badge, link) {
-                origAdd(title, text, date, badge, link);
-                const id = announcementCount; // last created id
-                const item = document.getElementById(`announcement-${id}`);
-                if (item) {
-                    item.setAttribute('draggable', 'true');
-                    item.addEventListener('dragstart', onDragStart);
-                    item.addEventListener('dragend', onDragEnd);
-                    // add drag handle visual
-                    if (!item.querySelector('.drag-handle')) {
-                        const handle = document.createElement('div');
-                        handle.className = 'drag-handle';
-                        handle.title = 'Drag to reorder';
-                        handle.textContent = '≡';
-                        item.appendChild(handle);
-                    }
-                    // better inputs: date and link
-                    const dateInput = document.getElementById(`date-${id}`);
-                    if (dateInput) {
-                        dateInput.setAttribute('placeholder', 'YYYY-MM-DD');
-                    }
-                    const linkInput = document.getElementById(`link-${id}`);
-                    if (linkInput && link && link.startsWith('http') === false) {
-                        linkInput.setAttribute('placeholder', 'https://...');
-                    }
-                }
-            };
-        })();
-
-        // JSON tools: copy, download, upload; GitHub connection test
-        function copyJSON() {
-            const data = generateJSON();
-            const text = JSON.stringify(data, null, 2);
-            navigator.clipboard.writeText(text).then(() => {
-                showStatus('JSON copied to clipboard.', 'success');
-            }).catch(() => showStatus('Copy failed.', 'error'));
-        }
-
-        function downloadJSON() {
-            const data = generateJSON();
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'data.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function uploadJSON(fileInput) {
-            const file = fileInput.files && fileInput.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const obj = JSON.parse(String(evt.target.result));
-                    // populate settings
-                    if (obj.settings) {
-                        if (obj.settings.title) document.getElementById('siteTitle').value = obj.settings.title;
-                    }
-                    if (obj.content) {
-                        if (obj.content.headline) document.getElementById('headline').value = obj.content.headline;
-                        if (obj.content.subheadline) document.getElementById('subheadline').value = obj.content.subheadline;
-                    }
-                    // clear and load announcements
-                    document.getElementById('announcementsList').innerHTML = '';
-                    announcementCount = 0;
-                    (obj.announcements || []).forEach(a => {
-                        addAnnouncement(a.title || '', a.text || '', a.date || '', a.badge || 'Update', a.link || '');
-                    });
-                    showStatus('JSON loaded into editor.', 'success');
-                    showTab('preview');
-                } catch (e) {
-                    showStatus('Invalid JSON file.', 'error');
-                }
-            };
-            reader.readAsText(file);
-            // reset input so same file can be re-selected
-            fileInput.value = '';
-        }
-
-        async function testGitHubConnection() {
-            const config = getGitHubConfig();
-            if (!config) {
-                showStatus('Configure GitHub first.', 'error');
-                return;
-            }
-            const { owner, repo, token } = config;
-            try {
-                const resp = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                if (resp.ok) {
-                    showStatus('GitHub connection successful.', 'success');
-                } else {
-                    const j = await resp.json();
-                    showStatus(`Connection failed: ${j.message}`, 'error');
-                }
-            } catch (e) {
-                showStatus(`Connection error: ${e.message}`, 'error');
             }
         }
     </script>
