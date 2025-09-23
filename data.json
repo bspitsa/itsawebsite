@@ -1,0 +1,33 @@
+{
+  "settings": {
+    "title": "ITSA",
+    "lastUpdated": "2025-09-23T14:31:45.975Z"
+  },
+  "content": {
+    "headline": "Welcome to ITSA",
+    "subheadline": "This is our new website. All updates, announcements, events would be uploaded here."
+  },
+  "announcements": [
+    {
+      "title": "Tech Summit 2025",
+      "text": "Our Annual Tech Summit is scheduled for October 15th, 2025! Join industry leaders and tech enthusiasts.",
+      "date": "October 15, 2025",
+      "badge": "Event",
+      "link": "#register"
+    },
+    {
+      "title": "AI Workshop Series",
+      "text": "Join our monthly AI workshop series starting November. Learn from experts in machine learning and AI.",
+      "date": "Starting Nov 2025",
+      "badge": "New",
+      "link": "#workshop"
+    },
+    {
+      "title": "Member Portal Launch",
+      "text": "New member portal is now live! Access exclusive resources, networking tools, and event materials.",
+      "date": "Available Now",
+      "badge": "Update",
+      "link": "#portal"
+    }
+  ]
+}
