@@ -1,20 +1,13 @@
 {
   "settings": {
     "title": "ITSA",
-    "lastUpdated": "2025-09-23T16:09:32.857Z"
+    "lastUpdated": "2025-09-23T17:19:29.629Z"
   },
   "content": {
     "headline": "Welcome to ITSA",
     "subheadline": "Empowering innovation through technology and collaboration. Join our community of forward-thinking professionals shaping the future."
   },
   "announcements": [
-    {
-      "title": "Tech Summit 2025",
-      "text": "Our Annual Tech Summit is scheduled for October 15th, 2025! Join industry leaders and tech enthusiasts.",
-      "date": "October 15, 2025",
-      "badge": "Event",
-      "link": "#register"
-    },
     {
       "title": "AI Workshop Series",
       "text": "Join our monthly AI workshop series starting November. Learn from experts in machine learning and AI.",
@@ -28,6 +21,13 @@
       "date": "Available Now",
       "badge": "Update",
       "link": "#portal"
+    },
+    {
+      "title": "Hackathon",
+      "text": "Our new Hackathon is scheduled on 20 November for First year, Second year and Third year. Follow the Link for Registration",
+      "date": "2025/11/20",
+      "badge": "New",
+      "link": "#hackathon"
     }
   ]
 }
