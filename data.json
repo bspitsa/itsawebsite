@@ -1,7 +1,7 @@
 {
   "settings": {
     "title": "ITSA",
-    "lastUpdated": "2025-09-25T13:15:45.214Z"
+    "lastUpdated": "2025-09-25T13:52:18.327Z"
   },
   "content": {
     "headline": "Welcome to ITSA",
@@ -21,6 +21,13 @@
       "date": "Available Now",
       "badge": "Update",
       "link": "#portal"
+    },
+    {
+      "title": "Hackathon",
+      "text": "Registration for Hackathon for First Year, Second Year and Third Year are out now!",
+      "date": "Starting November 2025",
+      "badge": "New",
+      "link": "#hackathon"
     }
   ]
 }
