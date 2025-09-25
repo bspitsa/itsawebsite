@@ -1,7 +1,7 @@
 {
   "settings": {
     "title": "ITSA",
-    "lastUpdated": "2025-09-23T17:35:41.553Z"
+    "lastUpdated": "2025-09-25T13:15:45.214Z"
   },
   "content": {
     "headline": "Welcome to ITSA",
@@ -16,25 +16,11 @@
       "link": "#register"
     },
     {
-      "title": "AI Workshop Series",
-      "text": "Join our monthly AI workshop series starting November. Learn from experts in machine learning and AI.",
-      "date": "Starting Nov 2025",
-      "badge": "New",
-      "link": "#workshop"
-    },
-    {
       "title": "Member Portal Launch",
       "text": "New member portal is now live! Access exclusive resources, networking tools, and event materials.",
       "date": "Available Now",
       "badge": "Update",
       "link": "#portal"
-    },
-    {
-      "title": "Hackathon",
-      "text": "Registration for Hackathon for first year, second year and third year are out now!",
-      "date": "2025/11/20",
-      "badge": "New",
-      "link": "#hackathon"
     }
   ]
 }
