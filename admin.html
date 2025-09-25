@@ -562,6 +562,10 @@
             }
         };
 
+        // Auto update configuration
+        let lastAdminConfigSignature = null;
+        const ADMIN_CONFIG_AUTO_REFRESH_MS = 5 * 60 * 1000; // 5 minutes
+
         // Load admin configuration on startup
         async function loadAdminConfiguration() {
             try {
@@ -569,14 +573,31 @@
                 
                 if (response.ok) {
                     const config = await response.json();
+                    const newSignature = JSON.stringify(config);
+                    const isChanged = lastAdminConfigSignature !== null && newSignature !== lastAdminConfigSignature;
+
                     adminConfig = { ...adminConfig, ...config };
+                    lastAdminConfigSignature = newSignature;
                     
                     // Update page title and UI elements
                     document.title = adminConfig.settings.adminTitle;
-                    document.querySelector('.admin-title').textContent = adminConfig.settings.adminTitle;
-                    document.querySelector('.login-title').textContent = adminConfig.settings.adminTitle;
-                    
-                    console.log('Admin configuration loaded successfully');
+                    const adminTitleEl = document.querySelector('.admin-title');
+                    const loginTitleEl = document.querySelector('.login-title');
+                    if (adminTitleEl) adminTitleEl.textContent = adminConfig.settings.adminTitle;
+                    if (loginTitleEl) loginTitleEl.textContent = adminConfig.settings.adminTitle;
+
+                    if (isChanged) {
+                        if (document.getElementById('adminConfigForm')?.style.display === 'block') {
+                            loadCurrentAdminConfig();
+                        }
+                        const statusElement = document.getElementById('configStatus');
+                        if (statusElement) {
+                            updateConfigStatus();
+                        }
+                        try { showStatus('Admin configuration updated from server.', 'success'); } catch (e) {}
+                    } else {
+                        console.log('Admin configuration loaded successfully');
+                    }
                 } else {
                     console.log('No admin-config.json found, using defaults');
                 }
@@ -1106,8 +1127,11 @@
             }
         }
 
-        // Load admin configuration when DOM is ready
-        document.addEventListener('DOMContentLoaded', loadAdminConfiguration);
+        // Load admin configuration when DOM is ready and start auto-refresh
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAdminConfiguration();
+            setInterval(loadAdminConfiguration, ADMIN_CONFIG_AUTO_REFRESH_MS);
+        });
     </script>
 </body>
 </html>
