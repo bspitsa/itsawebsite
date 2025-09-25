@@ -1,7 +1,7 @@
 {
   "settings": {
     "title": "ITSA",
-    "lastUpdated": "2025-09-25T15:32:59.273Z"
+    "lastUpdated": "2025-09-25T15:44:53.606Z"
   },
   "content": {
     "headline": "Welcome to ITSA",
@@ -9,11 +9,11 @@
   },
   "announcements": [
     {
-      "title": "Tech Summit 2025",
-      "text": "Our Annual Tech Summit is scheduled for October 15th, 2025! Join industry leaders and tech enthusiasts.",
-      "date": "October 15, 2025",
-      "badge": "Event",
-      "link": "#register"
+      "title": "Member Portal Launch",
+      "text": "New member portal is now live! Access exclusive resources, networking tools, and event materials.",
+      "date": "Available Now",
+      "badge": "Update",
+      "link": "#portal"
     }
   ]
 }
