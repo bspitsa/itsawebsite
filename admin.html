@@ -460,10 +460,10 @@
 
         <!-- Navigation Tabs -->
         <div class="tabs">
-            <button class="tab active" onclick="showTab('content', this)">Site Content</button>
-            <button class="tab" onclick="showTab('announcements', this)">Announcements</button>
-            <button class="tab" onclick="showTab('adminconfig', this)">Admin Panel Config</button>
-            <button class="tab" onclick="showTab('preview', this)">JSON Preview</button>
+            <button class="tab active" onclick="showTab('content')">Site Content</button>
+            <button class="tab" onclick="showTab('announcements')">Announcements</button>
+            <button class="tab" onclick="showTab('adminconfig')">Admin Panel Config</button>
+            <button class="tab" onclick="showTab('preview')">JSON Preview</button>
         </div>
 
         <!-- Site Content Tab -->
@@ -541,14 +541,17 @@
                 </button>
             </div>
         </div>
-    </div>
-     <div id="preview" class="tab-content">
+
+        <!-- JSON Preview Tab -->
+        <div id="preview" class="tab-content">
             <h2>JSON Preview</h2>
             <div id="jsonPreview" class="json-preview"></div>
             <button onclick="generateJSON()" class="btn btn-primary" style="margin-right: 1rem;">Generate JSON</button>
             <button onclick="commitToGitHub()" class="btn btn-success">Commit to GitHub</button>
         </div>
-      <script>
+    </div>
+
+    <script>
         // Dynamic Admin Configuration Loading
         let adminConfig = {
             credentials: {
@@ -562,10 +565,6 @@
             }
         };
 
-        // Auto update configuration
-        let lastAdminConfigSignature = null;
-        const ADMIN_CONFIG_AUTO_REFRESH_MS = 5 * 60 * 1000; // 5 minutes
-
         // Load admin configuration on startup
         async function loadAdminConfiguration() {
             try {
@@ -573,31 +572,14 @@
                 
                 if (response.ok) {
                     const config = await response.json();
-                    const newSignature = JSON.stringify(config);
-                    const isChanged = lastAdminConfigSignature !== null && newSignature !== lastAdminConfigSignature;
-
                     adminConfig = { ...adminConfig, ...config };
-                    lastAdminConfigSignature = newSignature;
                     
                     // Update page title and UI elements
                     document.title = adminConfig.settings.adminTitle;
-                    const adminTitleEl = document.querySelector('.admin-title');
-                    const loginTitleEl = document.querySelector('.login-title');
-                    if (adminTitleEl) adminTitleEl.textContent = adminConfig.settings.adminTitle;
-                    if (loginTitleEl) loginTitleEl.textContent = adminConfig.settings.adminTitle;
-
-                    if (isChanged) {
-                        if (document.getElementById('adminConfigForm')?.style.display === 'block') {
-                            loadCurrentAdminConfig();
-                        }
-                        const statusElement = document.getElementById('configStatus');
-                        if (statusElement) {
-                            updateConfigStatus();
-                        }
-                        try { showStatus('Admin configuration updated from server.', 'success'); } catch (e) {}
-                    } else {
-                        console.log('Admin configuration loaded successfully');
-                    }
+                    document.querySelector('.admin-title').textContent = adminConfig.settings.adminTitle;
+                    document.querySelector('.login-title').textContent = adminConfig.settings.adminTitle;
+                    
+                    console.log('Admin configuration loaded successfully');
                 } else {
                     console.log('No admin-config.json found, using defaults');
                 }
@@ -630,7 +612,7 @@
         }
 
         // Tab Management
-        function showTab(tabName, el) {
+        function showTab(tabName) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -641,7 +623,7 @@
 
             // Show selected tab
             document.getElementById(tabName).classList.add('active');
-            if (el) { el.classList.add('active'); }
+            event.target.classList.add('active');
 
             if (tabName === 'preview') {
                 generateJSON();
@@ -1052,18 +1034,6 @@
             }
         }
 
-        // Event Listeners
-        document.getElementById('loginForm').addEventListener('submit', login);
-        
-        // Auto-generate JSON when content changes
-        ['siteTitle', 'headline', 'subheadline'].forEach(id => {
-            document.getElementById(id).addEventListener('input', () => {
-                if (document.getElementById('preview').classList.contains('active')) {
-                    generateJSON();
-                }
-            });
-        });
-
         // GitHub Integration
         async function commitToGitHub() {
             const config = getGitHubConfig();
@@ -1127,11 +1097,20 @@
             }
         }
 
-        // Load admin configuration when DOM is ready and start auto-refresh
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAdminConfiguration();
-            setInterval(loadAdminConfiguration, ADMIN_CONFIG_AUTO_REFRESH_MS);
+        // Event Listeners
+        document.getElementById('loginForm').addEventListener('submit', login);
+        
+        // Auto-generate JSON when content changes
+        ['siteTitle', 'headline', 'subheadline'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                if (document.getElementById('preview').classList.contains('active')) {
+                    generateJSON();
+                }
+            });
         });
+
+        // Load admin configuration when DOM is ready
+        document.addEventListener('DOMContentLoaded', loadAdminConfiguration);
     </script>
 </body>
 </html>
