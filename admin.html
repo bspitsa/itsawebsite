@@ -462,6 +462,7 @@
         <div class="tabs">
             <button class="tab active" onclick="showTab('content')">Site Content</button>
             <button class="tab" onclick="showTab('announcements')">Announcements</button>
+            <button class="tab" onclick="showTab('adminconfig')">Admin Panel Config</button>
             <button class="tab" onclick="showTab('preview')">JSON Preview</button>
         </div>
 
@@ -493,14 +494,61 @@
             </div>
         </div>
 
-        <!-- JSON Preview Tab -->
+        <!-- Admin Panel Configuration Tab -->
+        <div id="adminconfig" class="tab-content">
+            <h2>Admin Panel Configuration</h2>
+            <div class="super-admin-auth" id="adminConfigAuth">
+                <h4>Super Admin Access Required</h4>
+                <div class="form-group">
+                    <label class="form-label">Super Admin Password</label>
+                    <input type="password" id="adminConfigPassword" class="form-input" placeholder="Enter super admin password">
+                    <button onclick="authenticateAdminConfig()" class="btn btn-primary" style="margin-top: 0.5rem;">
+                        Authenticate
+                    </button>
+                </div>
+            </div>
+            <div id="adminConfigForm" style="display: none;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Regular Admin Username</label>
+                        <input type="text" id="adminUsername" class="form-input" value="itsa">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Regular Admin Password</label>
+                        <input type="text" id="adminPassword" class="form-input" value="itsa2025">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Super Admin Password</label>
+                        <input type="text" id="superAdminPass" class="form-input" value="munnaboy123">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Admin Panel Title</label>
+                        <input type="text" id="adminTitle" class="form-input" value="ITSA Admin Panel">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Configuration Storage Duration (Days)</label>
+                    <select id="configDuration" class="form-input">
+                        <option value="30" selected>30 Days</option>
+                        <option value="60">60 Days</option>
+                        <option value="90">90 Days</option>
+                    </select>
+                </div>
+                <button onclick="updateAdminPanel()" class="btn btn-success" style="margin-top: 1rem;">
+                    Update Admin Panel
+                </button>
+            </div>
+        </div>
+    </div>
+         <!-- JSON Preview Tab -->
         <div id="preview" class="tab-content">
             <h2>JSON Preview</h2>
             <div id="jsonPreview" class="json-preview"></div>
             <button onclick="generateJSON()" class="btn btn-primary" style="margin-right: 1rem;">Generate JSON</button>
             <button onclick="commitToGitHub()" class="btn btn-success">Commit to GitHub</button>
-        </div>
-    </div>
+        </div> 
 
     <script>
         // Authentication
@@ -649,9 +697,146 @@
 
         // Super Admin Configuration Management
         let superAdminAuthenticated = false;
+        let adminConfigAuthenticated = false;
         const SUPER_ADMIN_PASSWORD = 'munnaboy123';
         const CONFIG_STORAGE_KEY = 'itsa_github_config';
         const CONFIG_EXPIRY_KEY = 'itsa_config_expiry';
+
+        function authenticateAdminConfig() {
+            const password = document.getElementById('adminConfigPassword').value;
+            
+            if (password === SUPER_ADMIN_PASSWORD) {
+                adminConfigAuthenticated = true;
+                document.getElementById('adminConfigAuth').style.display = 'none';
+                document.getElementById('adminConfigForm').style.display = 'block';
+                loadAdminConfig();
+            } else {
+                showStatus('Invalid super admin password!', 'error');
+                document.getElementById('adminConfigPassword').value = '';
+            }
+        }
+
+        function loadAdminConfig() {
+            // Load current configuration values
+            // These are the current values from the admin panel
+        }
+
+        async function updateAdminPanel() {
+            if (!adminConfigAuthenticated) {
+                showStatus('Super admin authentication required!', 'error');
+                return;
+            }
+
+            const config = getGitHubConfig();
+            
+            if (!config) {
+                showStatus('GitHub configuration not found. Please configure GitHub settings first.', 'error');
+                return;
+            }
+
+            const { owner, repo, token } = config;
+            
+            // Get admin configuration values
+            const adminUsername = document.getElementById('adminUsername').value;
+            const adminPassword = document.getElementById('adminPassword').value;
+            const superAdminPass = document.getElementById('superAdminPass').value;
+            const adminTitle = document.getElementById('adminTitle').value;
+            const configDuration = document.getElementById('configDuration').value;
+
+            if (!adminUsername || !adminPassword || !superAdminPass || !adminTitle) {
+                showStatus('Please fill in all admin configuration fields.', 'error');
+                return;
+            }
+
+            showStatus('Updating admin panel...', 'info');
+
+            try {
+                // Get current admin.html file
+                let sha = null;
+                let currentContent = '';
+
+                try {
+                    const getCurrentFile = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/admin.html`, {
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+
+                    if (getCurrentFile.ok) {
+                        const currentData = await getCurrentFile.json();
+                        sha = currentData.sha;
+                        currentContent = atob(currentData.content);
+                    }
+                } catch (e) {
+                    showStatus('admin.html file not found in repository.', 'error');
+                    return;
+                }
+
+                // Update the HTML content with new configuration
+                let updatedContent = currentContent;
+
+                // Update login credentials
+                updatedContent = updatedContent.replace(
+                    /if \(username === '.*?' && password === '.*?'\)/,
+                    `if (username === '${adminUsername}' && password === '${adminPassword}')`
+                );
+
+                // Update super admin password
+                updatedContent = updatedContent.replace(
+                    /const SUPER_ADMIN_PASSWORD = '.*?';/,
+                    `const SUPER_ADMIN_PASSWORD = '${superAdminPass}';`
+                );
+
+                // Update admin panel title in multiple places
+                updatedContent = updatedContent.replace(
+                    /<title>.*?<\/title>/,
+                    `<title>${adminTitle}</title>`
+                );
+                updatedContent = updatedContent.replace(
+                    /<h1 class="admin-title">.*?<\/h1>/,
+                    `<h1 class="admin-title">${adminTitle}</h1>`
+                );
+                updatedContent = updatedContent.replace(
+                    /<h1 class="login-title">.*?<\/h1>/,
+                    `<h1 class="login-title">${adminTitle}</h1>`
+                );
+
+                // Update configuration duration
+                updatedContent = updatedContent.replace(
+                    /expiryDate\.setMonth\(expiryDate\.getMonth\(\) \+ \d+\);/,
+                    `expiryDate.setMonth(expiryDate.getMonth() + ${Math.floor(configDuration / 30)});`
+                );
+
+                const encodedContent = btoa(updatedContent);
+
+                // Commit the updated file
+                const commitData = {
+                    message: `Admin panel configuration update - ${new Date().toLocaleString()}`,
+                    content: encodedContent,
+                    sha: sha
+                };
+
+                const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/admin.html`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(commitData)
+                });
+
+                if (response.ok) {
+                    showStatus('Admin panel updated successfully! Changes will be live in 2-3 minutes. You may need to refresh the page.', 'success');
+                } else {
+                    const error = await response.json();
+                    showStatus(`GitHub API Error: ${error.message}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error');
+            }
+        }
 
         function toggleGitHubConfig() {
             const section = document.getElementById('githubConfigSection');
@@ -835,7 +1020,7 @@
                 }
             });
         });
-         // GitHub Integration
+        // GitHub Integration
         async function commitToGitHub() {
             const config = getGitHubConfig();
             
