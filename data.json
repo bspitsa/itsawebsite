@@ -1,7 +1,7 @@
 {
   "settings": {
     "title": "ITSA",
-    "lastUpdated": "2025-09-29T09:14:02.959Z"
+    "lastUpdated": "2026-01-13T09:02:46.076Z"
   },
   "content": {
     "headline": "Welcome to ITSA",
@@ -30,11 +30,11 @@
       "link": "#portal"
     },
     {
-      "title": "Hackathon",
-      "text": "Registrations for Hackathon for FY, SY and TY are out now!",
-      "date": "Starting November 20",
-      "badge": "New",
-      "link": "#hackathon"
+      "title": "Prince's Birthday",
+      "text": "You're invited to prince's birthday party, venue- 519",
+      "date": "04/05/2008",
+      "badge": "Important",
+      "link": "#birthday"
     }
   ]
 }
