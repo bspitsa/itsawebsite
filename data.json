@@ -1,7 +1,7 @@
 {
   "settings": {
     "title": "ITSA",
-    "lastUpdated": "2026-01-13T09:02:46.076Z"
+    "lastUpdated": "2026-01-13T09:04:44.018Z"
   },
   "content": {
     "headline": "Welcome to ITSA",
@@ -28,13 +28,6 @@
       "date": "Available Now",
       "badge": "Update",
       "link": "#portal"
-    },
-    {
-      "title": "Prince's Birthday",
-      "text": "You're invited to prince's birthday party, venue- 519",
-      "date": "04/05/2008",
-      "badge": "Important",
-      "link": "#birthday"
     }
   ]
 }
